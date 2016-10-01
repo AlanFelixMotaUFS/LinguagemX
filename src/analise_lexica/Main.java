@@ -5,12 +5,35 @@ import java.io.StringReader;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 
-        String expr = "Ola 2 + 1.124124 * [(2*3) + 2] // 123 asdasd \n as1 + 2.0 /* and or !*/";
+//		Testando o programa:
+//			Programa
+//			var int a := 10;
+//			cons bool b := true;
+//			procedure TEST1(int a1)
+//			{
+//				var int r = a1/a;
+//				if(r>10)
+//					r:=-r;
+//				else
+//					TEST1(r);
+//			}
+//			funcion int QUADRADO(int num)
+//				num*num;
+//		 
+//		 */
 
-        Lexico lexical = new Lexico(new StringReader(expr));
-        lexical.yylex();
+		
+		
+		String program = "Programa /n var int a := 10; /n cons bool b := true; /n procedure TEST1(int a1)/n { /n var int r = a1/a; /n	if(r>10) /n r:=-r; /n else /n TEST1(r); /n }funcion /n int QUADRADO(int num) /n num*num; /n */";
+		
+		Lexico lexical = new Lexico(new StringReader(program));
+		// lexical.yylex();
 
-    }
+		Token token;
+		while ((token = lexical.yylex()) != null) {
+			System.out.println("<" + token.name + ", " + token.value + "> (" + token.line + " - " + token.column + ")");
+		}
+	}
 }

@@ -1,19 +1,21 @@
 package analise_lexica;
+import java_cup.runtime.*;
 
 %%
 
 %{
 
-private void imprimir(String descricao, String lexema) {
-    System.out.println(lexema + " - " + descricao);
+private Token createToken(String name, String value) {
+    return new Token( name, value, yyline, yycolumn);
 }
 
 %}
 
-
+%public
 %class Lexico
-%type void
-
+%type Token
+%line
+%column
 
 
 BRANCO = [\n| |\t|\r]
@@ -54,48 +56,48 @@ DOT = "."
 
 %%
 
-<YYINITIAL> "real"								{ imprimir("Palavra reservada real", yytext()); }
-<YYINITIAL> "int"                      			{ imprimir("Palavra reservada int", yytext()); }
-<YYINITIAL> "bool"                      		{ imprimir("Palavra reservada bool", yytext()); }
-<YYINITIAL> "true"                      		{ imprimir("Palavra reservada true", yytext()); }
-<YYINITIAL> "false"                      		{ imprimir("Palavra reservada false", yytext()); }
-<YYINITIAL> "if"                         		{ imprimir("Palavra reservada if", yytext()); }
-<YYINITIAL> "then"                       		{ imprimir("Palavra reservada then", yytext()); }
-<YYINITIAL> "else"                      		{ imprimir("Palavra reservada else", yytext()); }
-<YYINITIAL> "while"                      		{ imprimir("Palavra reservada while", yytext()); }
-<YYINITIAL> "procedure"                      	{ imprimir("Palavra reservada procedure", yytext()); }
-<YYINITIAL> "function"                      	{ imprimir("Palavra reservada function", yytext()); }
-<YYINITIAL> "cons"                      		{ imprimir("Palavra reservada cons", yytext()); }
-<YYINITIAL> "var"                      			{ imprimir("Palavra reservada var", yytext()); }
-<YYINITIAL> "and"								{ imprimir("Operador And", yytext()); }
-<YYINITIAL> "or"								{ imprimir("Operador Or", yytext()); }
+<YYINITIAL> "real"								{ return createToken("REAL", yytext()); }
+<YYINITIAL> "int"                      			{ return createToken("INT", yytext()); }
+<YYINITIAL> "bool"                      		{ return createToken("BOOL", yytext()); }
+<YYINITIAL> "true"                      		{ return createToken("TRUE", yytext()); }
+<YYINITIAL> "false"                      		{ return createToken("FALSE", yytext()); }
+<YYINITIAL> "if"                         		{ return createToken("IF", yytext()); }
+<YYINITIAL> "then"                       		{ return createToken("THEN", yytext()); }
+<YYINITIAL> "else"                      		{ return createToken("ELSE", yytext()); }
+<YYINITIAL> "while"                      		{ return createToken("WHILE", yytext()); }
+<YYINITIAL> "procedure"                      	{ return createToken("PROCEDURE", yytext()); }
+<YYINITIAL> "function"                      	{ return createToken("FUNCTION", yytext()); }
+<YYINITIAL> "cons"                      		{ return createToken("CONS", yytext()); }
+<YYINITIAL> "var"                      			{ return createToken("VAR", yytext()); }
+<YYINITIAL> "and"								{ return createToken("AND", yytext()); }
+<YYINITIAL> "or"								{ return createToken("OR", yytext()); }
 
 
 
-<YYINITIAL> {BRANCO}                     		{  }
-<YYINITIAL> {ID}                         		{ imprimir("Identificador", yytext()); }
-<YYINITIAL> {SOM}                         		{ imprimir("Operador de soma", yytext()); }
-<YYINITIAL> {SUB}                         		{ imprimir("Operador de subtração", yytext()); }
-<YYINITIAL> {MULT}                         		{ imprimir("Operador de multiplicação", yytext()); }
-<YYINITIAL> {DIV}                         		{ imprimir("Operador de divisão", yytext()); }
-<YYINITIAL> {EQ}                         		{ imprimir("Igualdade", yytext()); }
-<YYINITIAL> {ATTRIB}                         	{ imprimir("Atribuição", yytext()); }
-<YYINITIAL> {GTHAN}                         	{ imprimir("Operador Maior que", yytext()); }
-<YYINITIAL> {LTHAN}                         	{ imprimir("Operador Menor que", yytext()); }
-<YYINITIAL> {NOT}                         		{ imprimir("Operador Not", yytext()); }
-<YYINITIAL> {MOD}                         		{ imprimir("Operador Mod", yytext()); }
-<YYINITIAL> {LPAREN}                         	{ imprimir("Abre Parenteses", yytext()); }
-<YYINITIAL> {RPAREN}                         	{ imprimir("Fecha Parenteses", yytext()); }
-<YYINITIAL> {LBRACE}                         	{ imprimir("Abre chaves", yytext()); }
-<YYINITIAL> {RBRACE}                         	{ imprimir("Fecha chaves", yytext()); }
-<YYINITIAL> {LBRACK}                         	{ imprimir("Abre colchetes", yytext()); }
-<YYINITIAL> {RBRACK}                         	{ imprimir("Fecha colchetes", yytext()); }
-<YYINITIAL> {SEMICOLON}                         { imprimir("Ponto e vírgula", yytext()); }
-<YYINITIAL> {COMMA}                         	{ imprimir("Vírgula", yytext()); }
-<YYINITIAL> {DOT}                         		{ imprimir("Ponto", yytext()); }
+<YYINITIAL> {BRANCO}                     		{ /**/ }
+<YYINITIAL> {ID}                         		{ return createToken("IDENTIFIER", yytext()); }
+<YYINITIAL> {SOM}                         		{ return createToken("SOM", yytext()); }
+<YYINITIAL> {SUB}                         		{ return createToken("SUB", yytext()); }
+<YYINITIAL> {MULT}                         		{ return createToken("MULT", yytext()); }
+<YYINITIAL> {DIV}                         		{ return createToken("DIV", yytext()); }
+<YYINITIAL> {EQ}                         		{ return createToken("EQ", yytext()); }
+<YYINITIAL> {ATTRIB}                         	{ return createToken("ATTRIB", yytext()); }
+<YYINITIAL> {GTHAN}                         	{ return createToken("GTHAN", yytext()); }
+<YYINITIAL> {LTHAN}                         	{ return createToken("LTHAN", yytext()); }
+<YYINITIAL> {NOT}                         		{ return createToken("NOT", yytext()); }
+<YYINITIAL> {MOD}                         		{ return createToken("MOD", yytext()); }
+<YYINITIAL> {LPAREN}                         	{ return createToken("LPAREN", yytext()); }
+<YYINITIAL> {RPAREN}                         	{ return createToken("RPAREN", yytext()); }
+<YYINITIAL> {LBRACE}                         	{ return createToken("LBRACE", yytext()); }
+<YYINITIAL> {RBRACE}                         	{ return createToken("RBRACE", yytext()); }
+<YYINITIAL> {LBRACK}                         	{ return createToken("LBRACK", yytext()); }
+<YYINITIAL> {RBRACK}                         	{ return createToken("RBRACK", yytext()); }
+<YYINITIAL> {SEMICOLON}                         { return createToken("SEMICOLON", yytext()); }
+<YYINITIAL> {COMMA}                         	{ return createToken("COMMA", yytext()); }
+<YYINITIAL> {DOT}                         		{ return createToken("DOT", yytext()); }
 
-<YYINITIAL> {INTEIRO}                         	{ imprimir("Número Inteiro", yytext()); }
-<YYINITIAL> {FLOAT}								{ imprimir("Número real", yytext()); }
+<YYINITIAL> {INTEIRO}                         	{ return createToken("INTEGER_NUM", yytext()); }
+<YYINITIAL> {FLOAT}								{ return createToken("FLOAT_NUM", yytext()); }
 
 
 <YYINITIAL> "//"		{yybegin(COMENTARIO);
@@ -118,4 +120,5 @@ DOT = "."
 						}
 
 
-. 									{ throw new RuntimeException("Caractere inválido "+yytext()); }
+. 									{ throw new RuntimeException("Caractere inválido \""+yytext()+
+                                                              "\" at line "+yyline+", column "+yycolumn); }
