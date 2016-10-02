@@ -1,0 +1,128 @@
+analise_lexica
+
+import java_cup.runtime.*;
+import java.util.*;
+import java.io.*;
+
+
+parser code {:
+ 	scanner s;
+    Parser(scanner s){ this.s=s; }
+    
+    public void report_error(String message, Object info)  {
+        System.out.println("Warning - " + message);
+    }
+
+    public void report_fatal_error(String message, Object info)  {
+        System.out.println("Error - " + message);
+        System.exit(-1);
+    }
+
+:}
+init with {: s.init(); :};
+scan with {: return s.next_token(); :};
+
+terminal VAR;
+terminal CONS;
+terminal BOOL;
+terminal INT;
+terminal REAL;
+terminal IF, THEN, ELSE;
+terminal WHILE;
+terminal PROCEDURE;
+terminal FUNCTION;
+terminal COMMA;
+terminal SEMICOLON;
+terminal ID;
+terminal ATTRIB;
+terminal LBRACK, RBRACK;
+terminal LBRACE, RBRACE;
+terminal LPAREN, RPAREN;
+terminal TQ;
+terminal TRUE, FALSE;
+
+terminal PLUS;
+terminal MINUS;
+terminal MULT;
+terminal DIV;
+terminal MOD;
+terminal EQ;
+terminal GTHAN, LTHAN;
+terminal NOT, AND, OR;
+
+terminal INTEIRO, FLOAT;
+
+
+
+non terminal program;
+non terminal var-decs, var-dec, const-decs, const-dec, init, dec-procedimento, dec-funcao;
+non terminal array-exts, array-ext, array-comp;
+non terminal type, base-type;
+non terminal parametros, parametro, parametro-type;
+non terminal comando, bloco, variable, expression, bloco-exp, chamada, lista-exp;
+
+
+start with program;
+
+program ::= PROGRAM var-decs | const-decs | dec-procedimento | dec-funcao;
+
+var-decs ::= VAR var-dec | var-decs COMMA var-dec;
+var-dec ::= type (ID | init) SEMICOLON;
+
+cons-decs ::= CONS cons-dec | cons-decs COMMA cons-dec;
+cons-dec ::= type init SEMICOLON;
+
+init ::= ID ATTRIB (expression | array-ext | array-comp);
+
+array-exts ::= LBRACK array-ext RBRACK
+array-ext ::= array-ext COMMA expression
+array-comp ::= LBRACK ID TQ (array-comp | expression) RBRACK;
+
+type ::= base-type | type LBRACK expression RBRACK;
+base-type ::= INT | BOOL | REAL;
+
+
+dec-procedimento ::= PROCEDURE ID LPAREN parametros RPAREN comando;
+
+dec-funcao ::= FUNCTION type ID LPAREN parametros RPAREN expression;
+
+parametros ::= /* vazio */ | parametros COMMA parametro;
+parametro ::= [VAR] parametro-type ID;
+parametro-type ::= base-type | parametro-type LBRACK RBRACK;
+
+comando ::= IF LPAREN expression RPAREN comando
+			| IF LPAREN expression RPAREN comando ELSE comando
+			| WHILE LPAREN expression RPAREN comando
+			| variable ATTRIB expression SEMICOLON
+			| chamada SEMICOLON
+			| bloco;
+
+bloco ::= LBRACE var-dec | const-dec | comando RBRACE;
+
+variable ::= ID | var LBRACK expression RBRACK;
+
+expression ::= INTEIRO | FLOAT | TRUE | FALSE
+				| variable
+				| LPAREN expression RPAREN
+				| chamada
+				| MINUS expression
+				| IF LPAREN expression RPAREN THEN expression ELSE expression
+				| expression PLUS expression
+				| expression MINUS expression
+				| expression MULT expression
+				| expression DIV expression
+				| expression MOD expression
+				| expression EQ expression
+				| expression GTHAN expression
+				| expression LTHAN expression
+				| NOT expression
+				| expression AND expression
+				| expression OR expression
+				| bloco-exp; 
+
+bloco-exp ::= LBRACE cons-dec expression RBRACE;
+
+chamada ::= ID LPAREN lista-exp RPAREN;
+
+lista-exp ::= /* vazio */ | expression {COMMA expression};
+

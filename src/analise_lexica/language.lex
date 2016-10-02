@@ -1,19 +1,14 @@
 package analise_lexica;
-import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
 
 %%
 
-%{
 
-private Token createToken(String name, String value) {
-    return new Token( name, value, yyline, yycolumn);
-}
 
-%}
-
+%cup
 %public
 %class Lexico
-%type Token
+%type java_cup.runtime.Symbol
 %line
 %column
 
@@ -56,48 +51,48 @@ DOT = "."
 
 %%
 
-<YYINITIAL> "real"								{ return createToken("REAL", yytext()); }
-<YYINITIAL> "int"                      			{ return createToken("INT", yytext()); }
-<YYINITIAL> "bool"                      		{ return createToken("BOOL", yytext()); }
-<YYINITIAL> "true"                      		{ return createToken("TRUE", yytext()); }
-<YYINITIAL> "false"                      		{ return createToken("FALSE", yytext()); }
-<YYINITIAL> "if"                         		{ return createToken("IF", yytext()); }
-<YYINITIAL> "then"                       		{ return createToken("THEN", yytext()); }
-<YYINITIAL> "else"                      		{ return createToken("ELSE", yytext()); }
-<YYINITIAL> "while"                      		{ return createToken("WHILE", yytext()); }
-<YYINITIAL> "procedure"                      	{ return createToken("PROCEDURE", yytext()); }
-<YYINITIAL> "function"                      	{ return createToken("FUNCTION", yytext()); }
-<YYINITIAL> "cons"                      		{ return createToken("CONS", yytext()); }
-<YYINITIAL> "var"                      			{ return createToken("VAR", yytext()); }
-<YYINITIAL> "and"								{ return createToken("AND", yytext()); }
-<YYINITIAL> "or"								{ return createToken("OR", yytext()); }
+<YYINITIAL> "real"								{ return new Symbol(Simbolo.REAL); }
+<YYINITIAL> "int"                      			{ return new Symbol(Simbolo.INT); }
+<YYINITIAL> "bool"                      		{ return new Symbol(Simbolo.BOOL); }
+<YYINITIAL> "true"                      		{ return new Symbol(Simbolo.TRUE); }
+<YYINITIAL> "false"                      		{ return new Symbol(Simbolo.FALSE); }
+<YYINITIAL> "if"                         		{ return new Symbol(Simbolo.IF); }
+<YYINITIAL> "then"                       		{ return new Symbol(Simbolo.THEN); }
+<YYINITIAL> "else"                      		{ return new Symbol(Simbolo.ELSE); }
+<YYINITIAL> "while"                      		{ return new Symbol(Simbolo.WHILE); }
+<YYINITIAL> "procedure"                      	{ return new Symbol(Simbolo.PROCEDURE); }
+<YYINITIAL> "function"                      	{ return new Symbol(Simbolo.FUNCTION); }
+<YYINITIAL> "cons"                      		{ return new Symbol(Simbolo.CONS); }
+<YYINITIAL> "var"                      			{ return new Symbol(Simbolo.VAR); }
+<YYINITIAL> "and"								{ return new Symbol(Simbolo.AND); }
+<YYINITIAL> "or"								{ return new Symbol(Simbolo.OR); }
 
 
 
 <YYINITIAL> {BRANCO}                     		{ /**/ }
-<YYINITIAL> {ID}                         		{ return createToken("IDENTIFIER", yytext()); }
-<YYINITIAL> {SOM}                         		{ return createToken("SOM", yytext()); }
-<YYINITIAL> {SUB}                         		{ return createToken("SUB", yytext()); }
-<YYINITIAL> {MULT}                         		{ return createToken("MULT", yytext()); }
-<YYINITIAL> {DIV}                         		{ return createToken("DIV", yytext()); }
-<YYINITIAL> {EQ}                         		{ return createToken("EQ", yytext()); }
-<YYINITIAL> {ATTRIB}                         	{ return createToken("ATTRIB", yytext()); }
-<YYINITIAL> {GTHAN}                         	{ return createToken("GTHAN", yytext()); }
-<YYINITIAL> {LTHAN}                         	{ return createToken("LTHAN", yytext()); }
-<YYINITIAL> {NOT}                         		{ return createToken("NOT", yytext()); }
-<YYINITIAL> {MOD}                         		{ return createToken("MOD", yytext()); }
-<YYINITIAL> {LPAREN}                         	{ return createToken("LPAREN", yytext()); }
-<YYINITIAL> {RPAREN}                         	{ return createToken("RPAREN", yytext()); }
-<YYINITIAL> {LBRACE}                         	{ return createToken("LBRACE", yytext()); }
-<YYINITIAL> {RBRACE}                         	{ return createToken("RBRACE", yytext()); }
-<YYINITIAL> {LBRACK}                         	{ return createToken("LBRACK", yytext()); }
-<YYINITIAL> {RBRACK}                         	{ return createToken("RBRACK", yytext()); }
-<YYINITIAL> {SEMICOLON}                         { return createToken("SEMICOLON", yytext()); }
-<YYINITIAL> {COMMA}                         	{ return createToken("COMMA", yytext()); }
-<YYINITIAL> {DOT}                         		{ return createToken("DOT", yytext()); }
+<YYINITIAL> {ID}                         		{ return new Symbol(Simbolo.IDENTIFIER); }
+<YYINITIAL> {SOM}                         		{ return new Symbol(Simbolo.SOM); }
+<YYINITIAL> {SUB}                         		{ return new Symbol(Simbolo.SUB); }
+<YYINITIAL> {MULT}                         		{ return new Symbol(Simbolo.MULT); }
+<YYINITIAL> {DIV}                         		{ return new Symbol(Simbolo.DIV); }
+<YYINITIAL> {EQ}                         		{ return new Symbol(Simbolo.EQ); }
+<YYINITIAL> {ATTRIB}                         	{ return new Symbol(Simbolo.ATTRIB); }
+<YYINITIAL> {GTHAN}                         	{ return new Symbol(Simbolo.GTHAN); }
+<YYINITIAL> {LTHAN}                         	{ return new Symbol(Simbolo.LTHAN); }
+<YYINITIAL> {NOT}                         		{ return new Symbol(Simbolo.NOT); }
+<YYINITIAL> {MOD}                         		{ return new Symbol(Simbolo.MOD); }
+<YYINITIAL> {LPAREN}                         	{ return new Symbol(Simbolo.LPAREN); }
+<YYINITIAL> {RPAREN}                         	{ return new Symbol(Simbolo.RPAREN); }
+<YYINITIAL> {LBRACE}                         	{ return new Symbol(Simbolo.LBRACE); }
+<YYINITIAL> {RBRACE}                         	{ return new Symbol(Simbolo.RBRACE); }
+<YYINITIAL> {LBRACK}                         	{ return new Symbol(Simbolo.LBRACK); }
+<YYINITIAL> {RBRACK}                         	{ return new Symbol(Simbolo.RBRACK); }
+<YYINITIAL> {SEMICOLON}                         { return new Symbol(Simbolo.SEMICOLON); }
+<YYINITIAL> {COMMA}                         	{ return new Symbol(Simbolo.COMMA); }
+<YYINITIAL> {DOT}                         		{ return new Symbol(Simbolo.DOT); }
 
-<YYINITIAL> {INTEIRO}                         	{ return createToken("INTEGER_NUM", yytext()); }
-<YYINITIAL> {FLOAT}								{ return createToken("FLOAT_NUM", yytext()); }
+<YYINITIAL> {INTEIRO}                         	{ return new Symbol(Simbolo.INTEGER_NUM); }
+<YYINITIAL> {FLOAT}								{ return new Symbol(Simbolo.FLOAT_NUM); }
 
 
 <YYINITIAL> "//"		{yybegin(COMENTARIO);
@@ -119,6 +114,7 @@ DOT = "."
 						/* Ignora */;
 						}
 
+<<EOF>> { return new Symbol( Simbolo.EOF ); }
 
-. 									{ throw new RuntimeException("Caractere inválido \""+yytext()+
+[^] 									{ throw new RuntimeException("Caractere inválido \""+yytext()+
                                                               "\" at line "+yyline+", column "+yycolumn); }

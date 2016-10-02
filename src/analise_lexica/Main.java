@@ -29,11 +29,13 @@ public class Main {
 		String program = "Programa /n var int a := 10; /n cons bool b := true; /n procedure TEST1(int a1)/n { /n var int r = a1/a; /n	if(r>10) /n r:=-r; /n else /n TEST1(r); /n }funcion /n int QUADRADO(int num) /n num*num; /n */";
 		
 		Lexico lexical = new Lexico(new StringReader(program));
-		// lexical.yylex();
 
-		Token token;
-		while ((token = lexical.yylex()) != null) {
-			System.out.println("<" + token.name + ", " + token.value + "> (" + token.line + " - " + token.column + ")");
-		}
+	//	Object result = lexical.parse().value;
+ //       System.out.println(result.toString());
+		
+	//	Token token;
+	//	while ((token = lexical.yylex()) != null) {
+	//		System.out.println("<" + token.name + ", " + token.value + "> (" + token.line + " - " + token.column + ")");
+	//	}
 	}
 }

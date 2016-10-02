@@ -1,16 +1,19 @@
 package analise_lexica;
 
-public class Token {
+import java_cup.runtime.Symbol;
 
-	public String name;
-	public String value;
-	public Integer line;
-	public Integer column;
+public class Token extends Symbol {
+    
+    public int linha;
+    public int coluna;
+    
+	public Token(int tipo, int linha, int coluna, Object valor) {
+		this(tipo, linha, coluna, -1, -1, valor);
+	}
 
-	public Token(String name, String value, Integer line, Integer column) {
-		this.name = name;
-		this.value = value;
-		this.line = line;
-		this.column = column;
+	public Token(int tipo, int linha, int coluna, int esq, int dir, Object valor) {
+		super(tipo, esq, dir, valor);
+		this.linha = linha;
+		this.coluna = coluna;
 	}
 }
