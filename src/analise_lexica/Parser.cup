@@ -1,4 +1,4 @@
-analise_lexica
+package analise_lexica;
 
 import java_cup.runtime.*;
 import java.util.*;
@@ -6,21 +6,24 @@ import java.io.*;
 
 
 parser code {:
- 	scanner s;
-    Parser(scanner s){ this.s=s; }
-    
-    public void report_error(String message, Object info)  {
-        System.out.println("Warning - " + message);
+ 	  
+     public void report_error(String message, Object info) {
+        StringBuilder m = new StringBuilder("Error ");
+
+        if (info instanceof java_cup.runtime.Symbol) {
+            m.append( "("+info.toString()+")" );
+        }
+        m.append(" : "+message);
+        System.out.println(m);
+    }
+   
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        throw new RuntimeException("Fatal Syntax Error");
     }
 
-    public void report_fatal_error(String message, Object info)  {
-        System.out.println("Error - " + message);
-        System.exit(-1);
-    }
+:};
 
-:}
-init with {: s.init(); :};
-scan with {: return s.next_token(); :};
 
 terminal VAR;
 terminal CONS;
@@ -33,7 +36,6 @@ terminal PROCEDURE;
 terminal FUNCTION;
 terminal COMMA;
 terminal SEMICOLON;
-terminal ID;
 terminal ATTRIB;
 terminal LBRACK, RBRACK;
 terminal LBRACE, RBRACE;
@@ -50,61 +52,87 @@ terminal EQ;
 terminal GTHAN, LTHAN;
 terminal NOT, AND, OR;
 
-terminal INTEIRO, FLOAT;
+terminal java.lang.Number INTEIRO, FLOAT;
+terminal java.lang.String IDENTIFIER;
 
 
 
 non terminal program;
-non terminal var-decs, var-dec, const-decs, const-dec, init, dec-procedimento, dec-funcao;
-non terminal array-exts, array-ext, array-comp;
-non terminal type, base-type;
-non terminal parametros, parametro, parametro-type;
-non terminal comando, bloco, variable, expression, bloco-exp, chamada, lista-exp;
+non terminal dec, dec_list, dec_list_op;
+non terminal var_decs, cons_decs, var_dec, var_cons_dec, var_dec_id, dec_procedimento, dec_funcao;
+non terminal inicializador;
+non terminal array_exts, array_ext, array_comp;
+non terminal type, base_type;
+non terminal parametros, parametro, parametro_type;
+non terminal comando, comando_esp, bloco, bloco_com, bloco_comandos, bloco_comandos_list, assign, expression, simples, bloco_exp, chamada, lista_exp, lista_exp2;
+
+
+precedence right EQ;
+precedence left GTHAN, LTHAN; 
+precedence left PLUS, MINUS, OR; 
+precedence left MULT, DIV, MOD, AND; 
 
 
 start with program;
 
-program ::= PROGRAM var-decs | const-decs | dec-procedimento | dec-funcao;
+program ::= dec;
 
-var-decs ::= VAR var-dec | var-decs COMMA var-dec;
-var-dec ::= type (ID | init) SEMICOLON;
+dec ::= | dec_list;
 
-cons-decs ::= CONS cons-dec | cons-decs COMMA cons-dec;
-cons-dec ::= type init SEMICOLON;
+dec_list ::= dec_list_op | dec_list dec_list_op ;
 
-init ::= ID ATTRIB (expression | array-ext | array-comp);
+dec_list_op ::=  var_decs | cons_decs | dec_procedimento | dec_funcao;
 
-array-exts ::= LBRACK array-ext RBRACK
-array-ext ::= array-ext COMMA expression
-array-comp ::= LBRACK ID TQ (array-comp | expression) RBRACK;
+var_decs ::= VAR type var_cons_dec SEMICOLON;
+cons_decs ::= CONS type var_cons_dec SEMICOLON;
 
-type ::= base-type | type LBRACK expression RBRACK;
-base-type ::= INT | BOOL | REAL;
+var_cons_dec ::=  var_dec | var_cons_dec COMMA var_dec;
+
+var_dec ::= var_dec_id ATTRIB inicializador;
+
+var_dec_id ::= IDENTIFIER | var_dec_id LBRACK lista_exp RBRACK;
+
+inicializador ::= expression | array_exts | array_comp;
+
+array_exts ::= LBRACK array_ext RBRACK;
+array_ext ::= array_ext COMMA expression;
+array_comp ::= LBRACK IDENTIFIER TQ lista_exp RBRACK;
+
+type ::= base_type | type LBRACK expression RBRACK;
+base_type ::= INT | BOOL | REAL;
 
 
-dec-procedimento ::= PROCEDURE ID LPAREN parametros RPAREN comando;
+dec_procedimento ::= PROCEDURE IDENTIFIER LPAREN parametros RPAREN comando;
 
-dec-funcao ::= FUNCTION type ID LPAREN parametros RPAREN expression;
+dec_funcao ::= FUNCTION type IDENTIFIER LPAREN parametros RPAREN expression;
 
 parametros ::= /* vazio */ | parametros COMMA parametro;
-parametro ::= [VAR] parametro-type ID;
-parametro-type ::= base-type | parametro-type LBRACK RBRACK;
+parametro ::= VAR parametro_type IDENTIFIER;
+parametro_type ::= base_type | parametro_type LBRACK RBRACK;
 
-comando ::= IF LPAREN expression RPAREN comando
-			| IF LPAREN expression RPAREN comando ELSE comando
+comando ::= IF LPAREN expression RPAREN THEN comando
+			| IF LPAREN expression RPAREN THEN comando_esp ELSE comando
 			| WHILE LPAREN expression RPAREN comando
-			| variable ATTRIB expression SEMICOLON
+			| assign
 			| chamada SEMICOLON
 			| bloco;
+			
+comando_esp ::= IF LPAREN expression RPAREN THEN comando_esp ELSE comando_esp
+					| WHILE LPAREN expression RPAREN comando_esp
+					| assign
+					| chamada SEMICOLON
+					| bloco;
+					
+assign ::= IDENTIFIER EQ expression SEMICOLON;
 
-bloco ::= LBRACE var-dec | const-dec | comando RBRACE;
+bloco ::= LBRACE bloco_com RBRACE;
+bloco_com ::= /* */ | bloco_comandos_list;
+bloco_comandos_list ::= bloco_comandos | bloco_comandos_list bloco_comandos;
+bloco_comandos ::= var_dec | cons_decs | comando;
 
-variable ::= ID | var LBRACK expression RBRACK;
 
-expression ::= INTEIRO | FLOAT | TRUE | FALSE
-				| variable
-				| LPAREN expression RPAREN
-				| chamada
+
+expression ::= 	simples				
 				| MINUS expression
 				| IF LPAREN expression RPAREN THEN expression ELSE expression
 				| expression PLUS expression
@@ -118,11 +146,21 @@ expression ::= INTEIRO | FLOAT | TRUE | FALSE
 				| NOT expression
 				| expression AND expression
 				| expression OR expression
-				| bloco-exp; 
+				| bloco_exp; 
 
-bloco-exp ::= LBRACE cons-dec expression RBRACE;
+simples ::= INTEIRO | FLOAT | TRUE | FALSE
 
-chamada ::= ID LPAREN lista-exp RPAREN;
+			| LPAREN expression RPAREN 
+			| IDENTIFIER
+			| IDENTIFIER LBRACK expression RBRACK
+			| chamada;
+			
+chamada ::= IDENTIFIER LPAREN lista_exp RPAREN;
 
-lista-exp ::= /* vazio */ | expression {COMMA expression};
+bloco_exp ::= LBRACE cons_decs expression RBRACE;
+
+
+
+lista_exp ::= /* vazio */ | lista_exp2;
+lista_exp2 ::= expression | lista_exp2 COMMA expression;
 

@@ -1,7 +1,7 @@
 package analise_lexica;
 
 public interface Simbolo {
-	
+
 	public static final int CONS = 3;
 	public static final int FUNCTION = 12;
 	public static final int MULT = 16;
@@ -44,6 +44,4 @@ public interface Simbolo {
 	public static final int TRUE = 40;
 	public static final int FALSE = 41;
 
-
-	
 }

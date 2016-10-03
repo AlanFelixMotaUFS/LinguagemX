@@ -16,4 +16,8 @@ public class Token extends Symbol {
 		this.linha = linha;
 		this.coluna = coluna;
 	}
+	
+	public String toString() {
+        return "line "+linha+", column "+coluna+", sym: "+sym+(value == null ? "" : (", value: '"+value+"'"));
+    }
 }

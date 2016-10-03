@@ -10,7 +10,7 @@ public class Generator {
 		String rootPath = Paths.get("").toAbsolutePath().toString();
 		String subPath = "/src//analise_lexica/";
 
-		String file = rootPath + subPath + "language.lex";
+		String file = rootPath + subPath + "language.flex";
 
 		File sourceCode = new File(file);
 
