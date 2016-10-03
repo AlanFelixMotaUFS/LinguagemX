@@ -1,1 +1,1 @@
-var int x21;
+var int x := 1;

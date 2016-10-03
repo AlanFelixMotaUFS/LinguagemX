@@ -35,32 +35,32 @@ public class Main {
 
 		// Lexico lexical = new Lexico(new StringReader(program));
 
-		try {
-			Parser p = new Parser(new Lexico(new FileReader("../LinguagemX/src/analise_lexica/program.txt")));
-			Object result = p.debug_parse();
+//		try {
+//			Parser p = new Parser(new Lexico(new FileReader("../LinguagemX/src/analise_lexica/program.txt")));
+//			Object result = p.debug_parse();
+//
+//			//System.out.println(result.toString());
+//		} catch (Exception e) {
+//		//	System.out.println(e.getMessage());
+//		}
 
-			//System.out.println(result.toString());
-		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
-		}
-
-//		 try {
-//		 Lexico l = new Lexico(new
-//		 FileReader("../LinguagemX/src/analise_lexica/program.txt"));
-//		 while (true) {
-//		 try {
-//		 Symbol t = l.next_token();
-//		 if (t == null || t.sym == 0) {
-//		 System.out.println("EOF");
-//		 break;
-//		 }
-//		 System.out.println(t.toString());
-//		 } catch (IOException e) {
-//		 System.out.println(e.getMessage());
-//		 }
-//		 }
-//		 } catch (FileNotFoundException e1) {
-//		 System.out.println(e1.getMessage());
-//		 }
+		 try {
+		 Lexico l = new Lexico(new
+		 FileReader("../LinguagemX/src/analise_lexica/program.txt"));
+		 while (true) {
+		 try {
+		 Symbol t = l.next_token();
+		 if (t == null || t.sym == 0) {
+		 System.out.println("EOF");
+		 break;
+		 }
+		 System.out.println(t.toString());
+		 } catch (IOException e) {
+		 System.out.println(e.getMessage());
+		 }
+		 }
+		 } catch (FileNotFoundException e1) {
+		 System.out.println(e1.getMessage());
+		 }
 	}
 }

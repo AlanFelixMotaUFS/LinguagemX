@@ -24,48 +24,43 @@ parser code {:
 
 :};
 
+/* Terminais */
 
-terminal VAR;
-terminal CONS;
-terminal BOOL;
-terminal INT;
-terminal REAL;
-terminal IF, THEN, ELSE;
-terminal WHILE;
-terminal PROCEDURE;
-terminal FUNCTION;
-terminal COMMA;
-terminal SEMICOLON;
-terminal ATTRIB;
-terminal LBRACK, RBRACK;
-terminal LBRACE, RBRACE;
-terminal LPAREN, RPAREN;
-terminal TQ;
-terminal TRUE, FALSE;
+terminal VAR, CONS;							// Variáveis e constantes
+terminal INT, REAL, BOOL;					// Tipos Primitivos
+terminal IF, THEN, ELSE, WHILE;				// If-Then-Else e While
+terminal PROCEDURE, FUNCTION;				// Procedures e Functions
+terminal COMMA, SEMICOLON;					// , E ;
+terminal ATTRIB;							// :=
+terminal LBRACK, RBRACK;                 	// [ E ]
+terminal LBRACE, RBRACE;					// { E }
+terminal LPAREN, RPAREN;					// ( E )
+terminal TQ;								// |
+terminal TRUE, FALSE;						// true e false
 
-terminal PLUS;
-terminal MINUS;
-terminal MULT;
-terminal DIV;
-terminal MOD;
-terminal EQ;
-terminal GTHAN, LTHAN;
-terminal NOT, AND, OR;
+terminal PLUS, MINUS, MULT, DIV;			// +, -, *, /
+terminal MOD, EQ, GTHAN, LTHAN;				// %, =, >, <
+terminal NOT, AND, OR;						// not, and E or
 
-terminal java.lang.Number INTEIRO, FLOAT;
-terminal java.lang.String IDENTIFIER;
+terminal java.lang.Number INTEIRO, FLOAT;	// Inteiro e Float
+terminal java.lang.String IDENTIFIER;		// Identificadores
 
 
+
+/* Não-terminais */
 
 non terminal program;
-non terminal dec, dec_list, dec_list_op;
-non terminal var_decs, cons_decs, var_dec, var_cons_dec, var_dec_id, dec_procedimento, dec_funcao;
+non terminal declaracoes, dec_list, dec_op;
+non terminal var_decs, cons_decs, var_dec, var_cons_dec, var_dec_id, dec_proc, dec_func;
 non terminal inicializador;
 non terminal array_exts, array_ext, array_comp;
-non terminal type, base_type;
+non terminal type, base_type, number;
 non terminal parametros, parametro, parametro_type;
-non terminal comando, comando_esp, bloco, bloco_com, bloco_comandos, bloco_comandos_list, assign, expression, simples, bloco_exp, chamada, lista_exp, lista_exp2;
+non terminal comando, comando_esp, bloco, bloco_com, bloco_comandos, bloco_comandos_list, assign;
+non terminal expression, simples, bloco_exp, chamada, lista_exp, lista_exp2;
 
+
+/* Precedências */
 
 precedence right EQ;
 precedence left GTHAN, LTHAN; 
@@ -73,22 +68,42 @@ precedence left PLUS, MINUS, OR;
 precedence left MULT, DIV, MOD, AND; 
 
 
+
+/* Estrutura do programa */
+
 start with program;
 
-program ::= dec;
 
-dec ::= | dec_list;
+/* Programa pode ser uma lista de declarações de variáveis, constantes, procedimentos e funções */
 
-dec_list ::= dec_list_op | dec_list dec_list_op ;
+program ::= declaracoes;
 
-dec_list_op ::=  var_decs | cons_decs | dec_procedimento | dec_funcao;
+/*
+*******************************************************************************************
+*	dec_list -> produz uma lista de declarações. Pode ser vazio
+*	dec_op -> produz as opções de declarações, que pode ser de variável (var_decs), constante (cons_decs), 
+* procedimento (dec_proc) ou função (dec_func)
+*******************************************************************************************
+*/
+
+declaracoes ::= | dec_list;
+dec_list ::= dec_op | dec_list dec_op;
+dec_op ::=  var_decs | cons_decs | dec_proc | dec_func;
+
+
+/*
+*******************************************************************************************
+*	var_decs -> produz uma declaração de uma ou mais variáveis.
+*	cons_decs -> produz uma declaração de uma ou mais constantes.
+*******************************************************************************************
+*/
 
 var_decs ::= VAR type var_cons_dec SEMICOLON;
 cons_decs ::= CONS type var_cons_dec SEMICOLON;
 
-var_cons_dec ::=  var_dec | var_cons_dec COMMA var_dec;
+var_cons_dec ::=  var_dec | var_cons_dec COMMA var_dec;					// Gera uma ou mais variáveis/constantes separadas por vírgula
 
-var_dec ::= var_dec_id ATTRIB inicializador;
+var_dec ::= var_dec_id ATTRIB inicializador;							// Gera a inicialização da variável/constante
 
 var_dec_id ::= IDENTIFIER | var_dec_id LBRACK lista_exp RBRACK;
 
@@ -99,12 +114,14 @@ array_ext ::= array_ext COMMA expression;
 array_comp ::= LBRACK IDENTIFIER TQ lista_exp RBRACK;
 
 type ::= base_type | type LBRACK expression RBRACK;
-base_type ::= INT | BOOL | REAL;
+base_type ::= number | BOOL;
+
+number ::= INT | REAL;
 
 
-dec_procedimento ::= PROCEDURE IDENTIFIER LPAREN parametros RPAREN comando;
+dec_proc ::= PROCEDURE IDENTIFIER LPAREN parametros RPAREN comando;
 
-dec_funcao ::= FUNCTION type IDENTIFIER LPAREN parametros RPAREN expression;
+dec_func ::= FUNCTION type IDENTIFIER LPAREN parametros RPAREN expression;
 
 parametros ::= /* vazio */ | parametros COMMA parametro;
 parametro ::= VAR parametro_type IDENTIFIER;
