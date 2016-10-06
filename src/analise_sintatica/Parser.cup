@@ -1,0 +1,140 @@
+// java -jar java-cup-11a.jar -dump -nonterms -parser Parser -symbols Simbolo Parser.cup
+
+package analise_sintatica;
+
+import analise_sintatica.Simbolo;
+
+import java_cup.runtime.*;
+ 
+
+parser code  {:
+    public void report_error(String message, Object info) {
+        StringBuilder m = new StringBuilder("Error ");
+
+        if (info instanceof java_cup.runtime.Symbol) {
+            m.append( "("+info.toString()+")" );
+        }
+        m.append(" : "+message);
+        System.out.println(m);
+    }
+   
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+        throw new RuntimeException("Fatal Syntax Error");
+    }
+:};
+
+// Terminais
+terminal VAR, CONS, PROCEDURE, FUNCTION, IF, THEN, ELSE, WHILE;
+terminal LPAREN, RPAREN, LBRACK, RBRACK, LBRACE, RBRACE;
+terminal SEMICOLON, COMMA, ATTRIB, TQ;
+terminal INT, REAL, BOOL;
+terminal INTEIRO, FLOAT, TRUE, FALSE;
+terminal PLUS, MINUS, MULT, DIV, MOD, EQ, GTHAN, LTHAN, NOT, AND, OR;
+terminal IDENTIFIER;
+
+// Não terminais
+non terminal Programa, dec_list;
+non terminal dec_var, dec_cons, dec_procedimento, dec_funcao;
+non terminal tipo, tipo_base, list_var_inic_opt;
+non terminal inicializacao, inic_opt, array_ext, array_comp, array_comp_opt;
+non terminal parametros, lista_param, parametro;
+non terminal comando, comando_esp;
+non terminal assign, variable, bloco, bloco_com, bloco_comandos_list, bloco_comandos;
+non terminal exp, simple_exp, bloco_exp, dec_cons_list, exp_list, exp_list_opt, chamada;
+
+
+// Precedências
+precedence left PLUS, MINUS;
+precedence left MULT, DIV, MOD; 
+precedence left GTHAN, LTHAN; 
+precedence left EQ;
+precedence left AND, OR; 
+
+
+
+
+//Estrutura do programa----------------------------------------
+//Programa : { dec_var | dec_cons | dec_procedimento | dec_funcao }
+
+start with Programa;
+
+Programa ::= /* vazio */ | Programa dec_list;
+
+dec_list ::= dec_var | dec_cons | dec_procedimento | dec_funcao;
+		
+// dec_var : 'var' tipo (ID | inicializacao) { ',' (ID | inicializacao) } ';'
+
+dec_var ::= VAR tipo list_var_inic_opt SEMICOLON;
+dec_cons ::= CONS tipo inicializacao SEMICOLON;
+dec_procedimento ::= PROCEDURE IDENTIFIER LPAREN parametros RPAREN comando;
+dec_funcao::= FUNCTION tipo IDENTIFIER LPAREN parametros RPAREN exp;
+
+parametros ::= /* vazio */ | parametro | lista_param;
+lista_param ::= parametro COMMA parametros;
+parametro ::= VAR tipo_base IDENTIFIER;
+
+tipo ::= tipo_base | tipo LBRACK exp RBRACK;
+tipo_base ::= INT | REAL | BOOL;
+
+list_var_inic_opt ::= IDENTIFIER
+					| inicializacao
+					| IDENTIFIER COMMA list_var_inic_opt
+					| inicializacao COMMA list_var_inic_opt;
+
+inicializacao ::= IDENTIFIER ATTRIB inic_opt;
+inic_opt ::= exp | array_ext | array_comp;
+
+array_ext ::= LBRACK exp_list RBRACK;
+array_comp ::= LBRACK IDENTIFIER TQ array_comp_opt RBRACK;
+array_comp_opt ::= array_comp | exp;
+
+comando ::= IF LPAREN exp RPAREN THEN comando
+			| IF LPAREN exp RPAREN THEN comando_esp ELSE comando
+			| WHILE LPAREN exp RPAREN comando
+			| assign
+			| chamada SEMICOLON
+			| bloco;
+
+comando_esp ::= IF LPAREN exp RPAREN THEN comando_esp ELSE comando_esp
+					| WHILE LPAREN exp RPAREN comando_esp
+					| assign
+					| chamada SEMICOLON
+					| bloco;
+					
+assign ::= variable ATTRIB exp SEMICOLON;
+variable ::= IDENTIFIER | variable LBRACK exp RBRACK;
+
+bloco ::= LBRACE bloco_com RBRACE;
+bloco_com ::= /* */ | bloco_comandos_list;
+bloco_comandos_list ::= bloco_comandos | bloco_comandos_list bloco_comandos;
+bloco_comandos ::= dec_var | dec_cons | comando;
+
+exp ::= simple_exp
+		| MINUS exp
+		| IF LPAREN exp RPAREN THEN exp ELSE exp
+		| exp PLUS exp
+		| exp MINUS exp
+		| exp MULT exp
+		| exp DIV exp
+		| exp MOD exp
+		| exp EQ exp
+		| exp GTHAN exp
+		| exp LTHAN exp 
+		| NOT exp
+		| exp AND exp
+		| exp OR exp
+		| bloco_exp;
+
+simple_exp ::= INTEIRO | FLOAT | TRUE | FALSE
+			| variable
+			| LPAREN exp RPAREN 
+			| chamada;
+
+bloco_exp ::= LBRACE dec_cons_list RBRACE;
+dec_cons_list ::= dec_cons_list dec_cons exp;
+
+chamada ::= IDENTIFIER LPAREN exp_list RPAREN;
+
+exp_list ::= /* vazio */ | exp exp_list_opt;
+exp_list_opt ::= COMMA exp_list;

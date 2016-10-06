@@ -1,0 +1,13 @@
+var int a:= 15, b := 10;
+cons real A := 2.153; 
+cons real PI := 3.14;
+procedure testeProcedure (var int a) if (1 + 2) then a := 4;
+function real testeFunction (var int a, var int b) a + b
+
+var int EXP := 1 + 2;
+
+var int ARRAY_EXT := [];
+
+procedure testeProcedure2 (var int b) {
+	if (1 + 2) then a := 4;
+	}

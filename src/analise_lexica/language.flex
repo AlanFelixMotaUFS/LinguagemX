@@ -31,8 +31,8 @@ FLOAT = {DIGITO}+ "." {DIGITO}* | {DIGITO}* "." {DIGITO}+
 ID = [:jletter:][:jletterdigit:]*
 
 /* Operadores */
-SOM = "+"
-SUB = "-"
+PLUS = "+"
+MINUS = "-"
 MULT = "*"
 DIV = "/"
 EQ = "="
@@ -52,8 +52,8 @@ LBRACK = "["
 RBRACK = "]"
 SEMICOLON = ";"
 COMMA = ","
-DOT = "."
 
+%state COMENTARIO2
 %state COMENTARIO
 
 
@@ -77,10 +77,11 @@ DOT = "."
 
 
 
+
 <YYINITIAL> {BRANCO}                     		{ /**/ }
 <YYINITIAL> {ID}                         		{ return token(IDENTIFIER, yytext()); }
-<YYINITIAL> {SOM}                         		{ return token(SOM); }
-<YYINITIAL> {SUB}                         		{ return token(SUB); }
+<YYINITIAL> {PLUS}                         		{ return token(PLUS); }
+<YYINITIAL> {MINUS}                         	{ return token(MINUS); }
 <YYINITIAL> {MULT}                         		{ return token(MULT); }
 <YYINITIAL> {DIV}                         		{ return token(DIV); }
 <YYINITIAL> {EQ}                         		{ return token(EQ); }
@@ -97,10 +98,9 @@ DOT = "."
 <YYINITIAL> {RBRACK}                         	{ return token(RBRACK); }
 <YYINITIAL> {SEMICOLON}                         { return token(SEMICOLON); }
 <YYINITIAL> {COMMA}                         	{ return token(COMMA); }
-<YYINITIAL> {DOT}                         		{ return token(DOT); }
 
-<YYINITIAL> {INTEIRO}                         	{ return token(INTEGER_NUM, new Integer(yytext())); }
-<YYINITIAL> {FLOAT}								{ return token(FLOAT_NUM, new Double(yytext())); }
+<YYINITIAL> {INTEIRO}                         	{ return token(INTEIRO, new Integer(yytext())); }
+<YYINITIAL> {FLOAT}								{ return token(FLOAT, new Double(yytext())); }
 
 
 <YYINITIAL> "//"		{yybegin(COMENTARIO);
@@ -112,13 +112,14 @@ DOT = "."
 						}
 
 
-<YYINITIAL> "/*"		{yybegin(COMENTARIO);
+<YYINITIAL> "/*"		{yybegin(COMENTARIO2);
 						 /* Ignora */;
 						}
-<COMENTARIO> [\n]		{}
-<COMENTARIO> "*"		{}
-<COMENTARIO> [^"*/"]	{}
-<COMENTARIO> "*/"		{yybegin(YYINITIAL);
+<COMENTARIO2> [\n]		{}
+<COMENTARIO2> "*"		{}
+<COMENTARIO2> "//"		{}
+<COMENTARIO2> [^"*/"]	{}
+<COMENTARIO2> "*/"		{yybegin(YYINITIAL);
 						/* Ignora */;
 						}
 
