@@ -14,7 +14,9 @@ import jflex.sym;
 public class Main {
 
 	public static void main(String[] args) {
-		//Lexico();
+		System.out.println("Análise Léxica.........");
+		Lexico();
+		System.out.println("Análise Léxica realizada com sucesso!");
 		Parser();
 
 	}
@@ -44,7 +46,7 @@ public class Main {
 	public static void Parser() {
 		try {
 			Parser p = new Parser(new Lexico(new FileReader("../LinguagemX/src/main/program.txt")));
-			
+
 			System.out.println("Análise sintática ..........");
 
 			p.debug_parse();
